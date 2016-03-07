@@ -165,8 +165,8 @@ class HrHandler(webapp2.RequestHandler):
                 thisyear = datetime.datetime.now()
                 dfyr = thisyear.year #get default year from current year
                 year = int(self.request.get('yearpicker',dfyr))
-                leave = LeaveDB.query(LeaveDB.year==year)
-                employee = EmployeeDB.query()
+                leave = LeaveDB.query(LeaveDB.year==year).order(-LeaveDB.datefrom)
+                employee = EmployeeDB.query().order(-EmployeeDB.hiredate)
                 thisuser =EmployeeDB.query(EmployeeDB.email==user,EmployeeDB.privilege=='admin').get()
                 if thisuser:
                     leavetype = LeaveTypeDB.query()
