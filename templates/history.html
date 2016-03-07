@@ -1,0 +1,100 @@
+{% include "templates/includes.html" %}
+
+<!---<div class="container" style="background-color:#ffffff;"> -->
+
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+        <br/>
+                <p align="right">
+            <a href="/hr" class="btn btn-info" role="button"><i class="fa fa-user"></i>{{thisuser.firstname}}</a>
+            <a href="/logout" class="btn btn-info" role="button"><i class="fa fa-sign-out"></i></a></p>
+            {%if notification%}
+            <p style="color:red">{{notification}}</p>
+            {%else%}{%endif%}
+
+           <p><h2 align="center" style="color:#3BB9FF">{{thisuser.lastname}} Leave History</h2></p>
+
+                <nav class="navbar navbar-default navbar-static-top">
+                  <div class="container">
+                          <div class="navbar-header" >
+                           <a class="navbar-brand" href="#"><h3 style="color:red">Leave history</h3></a>
+                            </div>
+                            <ul class="nav navbar-nav">
+                            <li><a href="/leave">Apply</a></li>
+                            <li><a href="/history">History</a></li>
+                                {% if thisuser.privilege == 'admin' %}
+                                <li><a href="/hr">Hr</a></li>
+                                {% endif %}
+                          </ul>
+                  </div>
+                </nav>
+            <div class="page-content">
+                <!-- PAGE CONTENT WRAPPER -->
+                <div class="page-content-wrap">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <!-- START DEFAULT DATATABLE -->
+                            <div class="panel panel-default">
+
+                              <form action="/history" method="get">
+                                  Select a year:
+                                  <select class="btn btn-default" name="yearpicker" id="yearpicker" value="{{year}}" required="required" onchange='this.form.submit()'>
+                                      <option disabled>{{year}}</option>
+                                  </select>
+                                  <script>
+                                          for (i = new Date().getFullYear(); i > 2014; i--)
+                                                {
+                                                    $('#yearpicker').append($('<option />').val(i).html(i));
+                                                }
+                                  </script>
+                                </form>
+
+
+                                {% if leave.count() > 0 %}
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>type</th>
+                                                    <th>from</th>
+                                                    <th>to</th>
+                                                    <th>Days</th>
+                                                    <th>Status</th>
+                                                    <th>Approved by</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+
+                                            {% for l in leave %}
+                                                <tr data-toggle="tooltip" title="Reason | {{l.reason}}">
+                                                    <td>{{l.leavetype}}</td>
+                                                    <td>{{l.datefrom.strftime('%d-%b')}}</td>
+                                                    <td>{{l.dateto.strftime('%d-%b-%Y')}}</td>
+                                                    <td>{{l.days}}</td>
+                                                    <td>{{l.leavestatus}}</td>
+                                                    <td>{{l.approvedby}}</td>
+                                                 </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                            </div>
+                            <!-- END DEFAULT DATATABLE -->
+
+                        </div>
+                                {% else %}
+                                <br/><br/>
+                                <h3 style="color:#C0C0C0;"><p align="center"><small style=""><i>Hi, {{thisuser.firstname}}</i></small><br/><br/>You have no request history for year {{year}}</p></h3>
+                                <br/><br/>
+                                {% endif %}
+                </div>
+                <!-- PAGE CONTENT WRAPPER -->
+            </div>
+
+</div>
+</div>
+</div>
+    </div>

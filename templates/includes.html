@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<head>
+        <!-- META SECTION -->
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+        <!-- END META SECTION -->
+
+        <!-- CSS INCLUDE -->
+        <link rel="stylesheet" type="text/css" id="theme" href="static/css/theme-default.css"/>
+        <!-- EOF CSS INCLUDE -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<style>
+        #formdiv {
+                text-align:left;
+            }
+            form {
+                display:inline-block;
+            }
+            </style>
+
+
+    </head>
+    <body>
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+
+    <!-- START SCRIPTS -->
+        <!-- START PLUGINS -->
+        <script type="text/javascript" src="static/js/plugins/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="static/js/plugins/jquery/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="static/js/plugins/bootstrap/bootstrap.min.js"></script>
+        <!-- END PLUGINS -->
+
+        <!-- THIS PAGE PLUGINS -->
+        <script type='text/javascript' src='static/js/plugins/icheck/icheck.min.js'></script>
+        <script type="text/javascript" src="static/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
+
+        <script type="text/javascript" src="static/js/plugins/datatables/jquery.dataTables.min.js"></script>
+        <!-- END PAGE PLUGINS -->
+
+        <!-- START TEMPLATE -->
+      
+        <script type="text/javascript" src="static/js/plugins.js"></script>
+        <script type="text/javascript" src="static/js/actions.js"></script>
+        <!-- END TEMPLATE -->
+    <!-- END SCRIPTS -->
+
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+                  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+          <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+          <script>
+                  $(function() {
+                    $( "#datefrom" ).datepicker({ dateFormat: 'yy-mm-dd' });
+                    $( "#dateto" ).datepicker({ dateFormat: 'yy-mm-dd' });
+                  });
+          </script>
+
+        <script>
+        for (i = new Date().getFullYear(); i > 1900; i--)
+            {
+                $('#yearpicker').append($('<option />').val(i).html(i));
+            }
+        </script>
+
+
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+
+
+    </body>
+
+
+</html>

@@ -1,0 +1,628 @@
+{% include "templates/includes.html" %}
+
+
+<!--<div class="container" style="background-color:#ffffff;">-->
+
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+            <br/>
+                <p align="right">
+                <a href="/hr" class="btn btn-info" role="button"><i class="fa fa-user"></i>{{thisuser.firstname}}</a>
+            <a href="/logout" class="btn btn-info" role="button"><i class="fa fa-sign-out"></i></a></p>
+            {%if notification%}
+            <p style="color:red">{{notification}}</p>
+            {%else%}{%endif%}
+
+            <!---<div id="formdiv"> <button class="btn btn-info" data-toggle="modal" data-target="#myModal">New Employee</button>
+            <button class="btn btn-info" data-toggle="modal" data-target="#newGroup">New Job title</button> -->
+<p><h2 align="center" style="color:#3BB9FF">Admin portal</h2></p>
+
+                <nav class="navbar navbar-default navbar-static-top">
+                  <div class="container">
+                      <form class="form-inline" role="form" action="/hr" method="get">
+                          <div class="navbar-header" style="display:inline;">
+                           <a class="navbar-brand" href="#"><h3 style="color:red">Hr Portal</h3></a>
+                            </div>
+                            <ul class="nav navbar-nav" >
+                                <li><a href="/hr?hractivity=pending">Pending</a></li>
+                                <li><a href="/hr?hractivity=employee">Employees</a></li>
+                                <li><a href="/hr?hractivity=leave">Leave types</a></li>
+                                <li><a href="/hr?hractivity=job">Job types</a></li>
+                                <li><a href="/hr?hractivity=holiday">Holidays</a></li>
+                                <li><a href="/leave">Apply Leave</a></li>
+                            </ul>
+                          </form>
+                  </div>
+                </nav>
+
+            <div class="page-content">
+                <!-- PAGE CONTENT WRAPPER -->
+                <div class="page-content-wrap">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            {% if hractivity == 'pending' %}
+                            <!-- START DEFAULT DATATABLE -->
+                            <div class="panel panel-default">
+                             <form action="/hr" method="get">
+                                 <br/>
+                                  Select a year:
+                                  <select class="btn btn-default" name="yearpicker" id="yearpicker" value="{{year}}" required="required" onchange='this.form.submit()'>
+                                      <option disabled>{{year}}</option>
+                                  </select>
+                                  <script>
+                                          for (i = new Date().getFullYear(); i > 2014; i--)
+                                                {
+                                                    $('#yearpicker').append($('<option />').val(i).html(i));
+                                                }
+                                  </script>
+                                </form>
+                                {% if leave.count() > 0 %}
+                                <div class="panel-body">
+                                    <P><h4 style="color:#3BB9FF">Leave application history</h4></P><br/>
+                                    <div class="table-responsive">
+                                        <table class="table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>name</th>
+                                                    <th>type</th>
+                                                    <th>from</th>
+                                                    <th>to</th>
+                                                    <th>Days</th>
+                                                    <th>Approved by</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+
+                                            {% for l in leave %}
+                                                <tr data-toggle="tooltip" title="Reason | {{l.reason}} | {{l.dateapproved}}">
+                                                    <td>{{l.name}}</td>
+                                                    <td>{{l.leavetype}}</td>
+                                                    <td>{{l.datefrom.strftime('%d-%b')}}</td>
+                                                    <td>{{l.dateto.strftime('%d-%b-%Y')}}</td>
+                                                    <td>{{l.days}}</td>
+                                                    <td>{{l.approvedby}}</td>
+                                                    {% if l.leavestatus == 'Pending' %}
+                                                    <form action="/hr" method="post">
+                                                    <td><small><button type="submit" name="approve" value="{{l.key.id()}}" class="btn btn-success btn-xs">YES</button></small>
+                                                    <small><button type="submit" name="decline" value="{{l.key.id()}}" class="btn btn-warning btn-xs">NO </button></small>
+                                                    </td>
+                                                    </form>
+                                                    {% elif l.leavestatus == 'Approved' %}
+                                                    <td>{{l.leavestatus}}</td>
+                                                    {% elif l.leavestatus == 'Declined' %}
+                                                    <td>{{l.leavestatus}}</td>
+                                                    {% else %}
+                                                    <td>Error!</td>
+                                                    {% endif %}
+
+                                                 </tr>
+                                            {% endfor %}
+
+                              </tbody></table>
+                            </div>
+                            <!-- END DEFAULT DATATABLE -->
+                                    </div>
+                                </div>
+                            {% else %}
+                                <br/><br/>
+                                <h3 style="color:#C0C0C0;"><p align="center"><small style=""><i>Hi, {{thisuser.firstname}}</i></small><br/><br/>There are no leave requets for {{year}}</p></h3>
+
+                            <br/><br/>
+                            {% endif %}
+
+                            {% endif %}
+
+
+                            {% if hractivity == 'employee' %}
+
+                            <!-- START DEFAULT DATATABLE -->
+                            <div class="panel panel-default">
+                                {% if employee.count() > 0 %}
+                                <div class="panel-body">
+                                    <P><h4 style="color:#3BB9FF">Employee List</h4></P>
+                                    <p><button name="activity" class="btn btn-default" value="job" data-toggle="modal" data-target="#newEmployee" type="button">New</button></p>
+
+                                    <div class="table-responsive">
+                                        <table class="table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>ID No.</th>
+                                                    <th>Hire date</th>
+                                                    <th>Phone</th>
+                                                    <th>Email</th>
+                                                    <th>Job</th>
+                                                    <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+
+                                                {% for e in employee %}
+                                                <tr>
+                                                    <td title="click to edit {{e.firstname}}" data-toggle="modal" data-target="#editEmployee" value="">
+                                                    <form action="/edit" method="post">
+                                                        <button type="submit" class="btn btn-link" name="edit" value="{{e.key.id()}}">{{e.firstname}} {{e.lastname}}</button>
+                                                    </form></td>
+                                                    <td>{{e.idno}}</td>
+                                                    <td>{{e.hiredate}}</td>
+                                                    <td>{{e.phone}}</td>
+                                                    <td>{{e.email}}</td>
+                                                    <td>{{e.job}}</td>
+                                                    <td>{{e.type}}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                              </tbody></table>
+                            </div>
+                            <!-- END DEFAULT DATATABLE -->
+
+                        </div>
+                    </div>
+                            {% else %}
+                                <br/><br/>
+                                <h1 style="color:#C0C0C0;"><p align="center"><small style=""><i>Hi, {{thisuser.firstname}}</i></small><br/><br/>There are currently no team members for your organization</p></h1>
+                            <p align="center"><button name="activity"  class="btn btn-default" value="holiday" data-toggle="modal" data-target="#newEmployee" type="button">Add New Employee</button></p>
+
+                            <br/><br/>
+                            {% endif %}
+
+                            {% endif %}
+
+                            {% if hractivity == 'job' %}
+                     <!-- START DEFAULT DATATABLE -->
+                            <div class="panel panel-default">
+                                {% if job.count() > 0 %}
+
+                                <div class="panel-body">
+                                    <P><h4 style="color:#3BB9FF">ISP Available Job Types</h4></P><br/>
+                                    <p><button name="activity"  class="btn btn-default" value="job" data-toggle="modal" data-target="#newJob" type="button">New</button></p>
+                                    <div class="table-responsive">
+                                        <table class="table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+
+                                            {% for j in job %}
+                                                <tr>
+                                                    <td>{{j.title}}</td>
+                                                    <td>{{j.description}}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                              </tbody></table>
+                            </div>
+                            <!-- END DEFAULT DATATABLE -->
+                                    </div>
+                                </div>
+
+                            {% else %}
+                                <br/><br/>
+                                <h1 style="color:#C0C0C0;"><p align="center"><small style=""><i>Hi, {{thisuser.firstname}}</i></small><br/><br/>There are currently no job types for your organization</p></h1>
+                            <p align="center"><button name="activity"  class="btn btn-default" value="holiday" data-toggle="modal" data-target="#newJob" type="button">Add New Job Type</button></p>
+                            <br/><br/>
+                            {% endif %}
+
+                            {% endif %}
+
+                            {% if hractivity == 'leave' %}
+
+                                                         <!-- START DEFAULT DATATABLE -->
+                            <div class="panel panel-default">
+                                {% if leavetype.count() > 0 %}
+
+                                <div class="panel-body">
+                                    <P><h4 style="color:#3BB9FF">ISP Available Leave Types</h4></P><br/>
+                                    <p><button name="activity"  class="btn btn-default" value="job" data-toggle="modal" data-target="#newLeaveType" type="button">New</button></p>
+                                    <div class="table-responsive">
+                                        <table class="table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Type</th>
+                                                    <th>Duration</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+
+                                            {% for t in leavetype %}
+                                                <tr>
+                                                    <td>{{t.type}}</td>
+                                                    <td>{{t.duration}}</td>
+                                                    <td>{{t.description}}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                              </tbody></table>
+                            </div>
+                            <!-- END DEFAULT DATATABLE -->
+                                    </div>
+                                </div>
+
+                            {% else %}
+                                <br/><br/>
+                                <h1 style="color:#C0C0C0;"><p align="center"><small style=""><i>Hi, {{thisuser.firstname}}</i></small><br/><br/>There are currently no leave types for your organization</p></h1>
+                            <p align="center"><button name="activity"  class="btn btn-default" value="holiday" data-toggle="modal" data-target="#newLeaveType" type="button">Add New LeaveType</button></p>
+                            <br/><br/>
+                            {% endif %}
+                            {% endif%}
+
+                    {% if hractivity == 'holiday' %}
+                     <!-- START DEFAULT DATATABLE -->
+                            <div class="panel panel-default">
+                                {% if holiday.count() > 0 %}
+
+                                <div class="panel-body">
+                                    <P><h4 style="color:#3BB9FF">ISP Holidays</h4></P><br/>
+                                    <p><button name="activity"  class="btn btn-default" value="holiday" data-toggle="modal" data-target="#newHoliday" type="button">New</button></p>
+                                    <div class="table-responsive">
+                                        <table class="table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Date</th>
+                                                    <th>Kind</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+
+                                            {% for j in holiday %}
+                                                <tr>
+                                                    <td>{{j.name}}</td>
+                                                    <td>{{j.date}}</td>
+                                                    <td>{{j.kind}}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                              </tbody></table>
+                            </div>
+                            <!-- END DEFAULT DATATABLE -->
+                                    </div>
+                                </div>
+                            {% else %}
+                                <br/><br/>
+                                <h1 style="color:#C0C0C0;"><p align="center"><small style=""><i>Hi, {{thisuser.firstname}}</i></small><br/><br/>There are currently no holidays set for your organization</p></h1>
+                                <p align="center"><button name="activity"  class="btn btn-default" value="holiday" data-toggle="modal" data-target="#newHoliday" type="button">Add Holiday</button></p>
+                                <br/><br/>
+                            {% endif %}
+                            {% endif %}
+
+                </div>
+                <!-- PAGE CONTENT WRAPPER -->
+            </div>
+      <!-- Modal -->
+  <div class="modal fade" id="newEmployee" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <form action="/hr" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">New employee</h4>
+        </div>
+
+      <div class="modal-body">
+
+          <div class="table-responsive">
+            <table class="table datatable">
+            <tbody>
+              <tr>
+                <td><label>First Name</label></td>
+                <td><input class="form-control"  id="firstname" name="firstname" placeholder="First Name" type="text" required></td>
+              </tr>
+              <tr>
+                <td><label>Last Name</label></td>
+                <td><input class="form-control" id="lastname" name="lastname" placeholder="Last Name" type="text" required></td>
+              </tr>
+              <tr>
+                <td><label>ID no.</label></td>
+                <td><input class="form-control" id="idno" name="idno" placeholder=" National ID" type="number" required></td>
+              </tr>
+              <tr>
+                <td><label>Mobile no.</label></td>
+                <td><input class="form-control" id="phone" name="phone" placeholder="Mobile no." type="text" required></td>
+              </tr>
+              <tr>
+                  <td><label>Hire date</label></td>
+                  <td><input class="form-control" name="hiredate" placeholder="Hire Date" type="date"></td>
+              </tr>
+              <tr>
+                <td><label>E-mail</label></td>
+                <td><input class="form-control" id="mail" name="email" placeholder="Email" type="email" required></td>
+              </tr>
+            <tr>
+                <td><label>Job</label></td>
+                <td>
+                    <select name="job" type="text" class="form-control">
+                        <option disabled>select</option>
+                        {% for j in job %}
+                        <option>{{j.title}}</option>
+                        {% endfor %}
+
+                    </select>
+                </td>
+            </tr>
+              <tr>
+                <td><label>Type</label></td>
+                <td>
+                    <select name="type" type="text" class="form-control">
+                        <option disabled>select</option>
+                        <option>Permanent</option>
+                        <option>Contract</option>
+                        <option>Intern</option>
+                        <option>Other</option>
+
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td><label>privilege</label></td>
+                <td>
+                    <select name="privilege" type="text" class="form-control">
+                        <option disabled>select</option>
+                        <option>user</option>
+                        <option>admin</option>
+
+                    </select>
+                </td>
+            </tr>
+
+            </tbody>
+            </table>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button name="newemployee" value="true" class="btn btn-default pull-right" type="submit">Add</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+        </form>
+        </div>
+  </div>
+              <!-- End Modal content-->
+
+
+                          <!-- Modal -->
+  <div class="modal fade" id="editEmployee" role="dialog">
+    <div class="modal-dialog">
+
+                     <!-- Edit Employee Modal content-->
+      <form action="/hr" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Edit employee modal</h4>
+        </div>
+
+      <div class="modal-body">
+
+          <div class="table-responsive">
+            <table class="table datatable">
+            <tbody>
+              <tr>
+                <td><label>First Name</label></td>
+                <td><input class="form-control" value="{{edit}}"  id="efirstname" name="firstname" placeholder="First Name" type="text" required></td>
+              </tr>
+              <tr>
+                <td><label>Last Name</label></td>
+                <td><input class="form-control" id="elastname" name="lastname" placeholder="Last Name" type="text" required></td>
+              </tr>
+              <tr>
+                <td><label>ID no.</label></td>
+                <td><input class="form-control" id="eidno" name="idno" placeholder=" National ID" type="number" required></td>
+              </tr>
+              <tr>
+                <td><label>Mobile no.</label></td>
+                <td><input class="form-control" id="ephone" name="phone" placeholder="Mobile no." type="text" required></td>
+              </tr>
+              <tr>
+                  <td><label>Hire date</label></td>
+                  <td><input class="form-control" name="hiredate" placeholder="Hire Date" type="date"></td>
+              </tr>
+              <tr>
+                <td><label>E-mail</label></td>
+                <td><input class="form-control" id="email" name="email" placeholder="Email" type="email" required></td>
+              </tr>
+            <tr>
+                <td><label>Job</label></td>
+                <td>
+                    <select name="job" type="text" class="form-control">
+                        <option disabled>select</option>
+                        {% for j in job %}
+                        <option>{{j.title}}</option>
+                        {% endfor %}
+
+                    </select>
+                </td>
+            </tr>
+              <tr>
+                <td><label>Type</label></td>
+                <td>
+                    <select name="type" type="text" class="form-control">
+                        <option disabled>select</option>
+                        <option>Permanent</option>
+                        <option>Contract</option>
+                        <option>Intern</option>
+                        <option>Other</option>
+
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td><label>privilege</label></td>
+                <td>
+                    <select name="privilege" type="text" class="form-control">
+                        <option disabled>select</option>
+                        <option>user</option>
+                        <option>admin</option>
+
+                    </select>
+                </td>
+            </tr>
+
+            </tbody>
+            </table>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button name="newemployee" value="true" class="btn btn-default pull-right" type="submit">Add</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+        </form>
+        </div>
+  </div>
+              <!-- End Modal content-->
+
+     <!-- Modal -->
+  <div class="modal fade" id="newJob" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <form action="/hr" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">New Job Title</h4>
+        </div>
+
+      <div class="modal-body">
+
+          <div class="table-responsive">
+            <table class="table datatable">
+            <tbody>
+            <tr>
+                <td><label>Job title</label></td>
+                <td><input class="form-control" id="title" name="title" placeholder=" new job title" type="text" required></td>
+            </tr>
+            <tr>
+                <td><label>Short description</label></td>
+                <td><textarea class="form-control" id="description" name="description" placeholder=" job description" type="text" required></textarea></td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button name="newjob" value="true" class="btn btn-default pull-right" type="submit">Add</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+        </form>
+        </div>
+  </div>
+              <!-- End Modal content-->
+
+                             <!-- Modal -->
+  <div class="modal fade" id="newHoliday" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <form action="/hr" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">New Holiday Date</h4>
+        </div>
+
+      <div class="modal-body">
+
+          <div class="table-responsive">
+            <table class="table datatable">
+            <tbody>
+            <tr>
+                <td><label>Job Name</label></td>
+                <td><input class="form-control" id="name" name="name" placeholder=" new holiday name" type="text" required></td>
+            </tr>
+            <tr>
+                <td><label>Date</label></td>
+                <td><input class="form-control" type="date" id="date" name="holidate" placeholder=" holiday date" required></td>
+            </tr>
+            <tr>
+                <td><label>Kind</label></td>
+                <td>
+                    <select name="kind" type="text" class="form-control">
+                        <option disabled>select</option>
+                        <option>yearly</option>
+                        <option>once</option>
+
+                    </select>
+                </td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button name="newholiday" value="true" class="btn btn-default pull-right" type="submit">Add</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+        </form>
+        </div>
+  </div>
+              <!-- End Modal content-->
+
+                             <!-- Modal -->
+  <div class="modal fade" id="newLeaveType" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <form action="/hr" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">New Leave Type</h4>
+        </div>
+
+      <div class="modal-body">
+
+          <div class="table-responsive">
+            <table class="table datatable">
+            <tbody>
+            <tr>
+                <td><label>Leave type</label></td>
+                <td><input class="form-control" id="type" name="leavetype" placeholder=" new leave type" type="text" required></td>
+            </tr>
+            <tr>
+                <td><label>Duration</label></td>
+                <td><input class="form-control" id="duration" name="leaveduration" placeholder=" leave duration (days)" type="number" required></td>
+            </tr>
+            <tr>
+                <td><label>Description</label></td>
+                <td><textarea class="form-control" id="description2" name="leavedescription" placeholder=" job description" type="text" required></textarea></td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button name="newleavetype" value="true" class="btn btn-default pull-right" type="submit">Add</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+        </form>
+        </div>
+  </div>
+              <!-- End Modal content-->
+</div>
+</div>
+</div></div></div></div>

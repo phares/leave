@@ -1,0 +1,123 @@
+{% include "templates/includes.html" %}
+
+
+<!---<div class="container" style="background-color:#ffffff;"> -->
+
+    <div class="col-xs-12 col-md-10 col-md-offset-1">
+            <br/>
+                <p align="right">
+            <a href="/hr" class="btn btn-info" role="button"><i class="fa fa-user"></i>{{thisuser.firstname}}</a>
+            <a href="/logout" class="btn btn-info" role="button"><i class="fa fa-sign-out"></i></a></p>
+            {%if notification%}
+            <p style="color:red">{{notification}}</p>
+            {%else%}{%endif%}
+
+
+           <p><h2 align="center" style="color:blue">ISP Leave Application</h2></p>
+
+                <nav class="navbar navbar-default navbar-static-top">
+                  <div class="container">
+                          <div class="navbar-header" >
+                           <a class="navbar-brand" href="#"><h3 style="color:red">Leave Portal</h3></a>
+                            </div>
+                            <ul class="nav navbar-nav">
+                            <li><a href="/leave">Apply</a></li>
+                            <li><a href="/history">History</a></li>
+                             {% if thisuser.privilege == 'admin' %}
+                                <li><a href="/hr">Hr</a></li>
+                                {% endif %}
+                          </ul>
+                  </div>
+                </nav>
+            <div class="page-content">
+                <!-- PAGE CONTENT WRAPPER -->
+                <div class="page-content-wrap">
+
+                        <div class="row" style="background-color:#ffffff;">
+
+                              <br/>
+                         <div class="col-xs-12 col-sm-6 col-md-6" >
+                            <p><h3 style="color:#3BB9FF">My Leave profile, {{year}}</h3></p><br>
+
+                            <p><h4>{{thisuser.firstname}} {{thisuser.lastname}}, <small>{{thisuser.idno}}, {{thisuser.job}}</small></h4></p>
+                              <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th>Leave type</th>
+                                        <th>Duration(days)</th>
+                                        <th>Taken(days)</th>
+                                        <th>Left(days)</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for t in leavestaken %}
+                                      <tr>
+                                        <td>{{t.type}}</td>
+                                        <td>{{t.duration}}</td>
+                                        <td>{{t.days}}</td>
+                                        <td>{{(t.duration)-(t.days)}}</td>
+                                      </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                  </table>
+
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2">
+                              <p><h3 style="color:#3BB9FF">To request for a leave, fill in the form below</h3></p><br/>
+                              <!-- Alert -->
+                              {% if errors %}
+                                  {% for e in errors %}
+                                     <small style="color:red;">{{e}}</small><br/>
+                                     {% endfor %}
+                              <br/>
+                              {% endif %}
+
+                              <!-- end alert -->
+                            <form action="/leave" method="post" class="form-horizontal">
+                              <div class="form-group">
+                                <label class="col-sm-2 control-label">type</label>
+                                <div class="col-sm-10">
+                                  <select class="form-control" id="leavetype" name="leavetype" placeholder="leave type." type="text" required>
+                                      {% for t in leavetype %}
+                                        <option>{{t.type}}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="col-sm-2 control-label">from</label>
+                                <div class="col-sm-10">
+                                  <input class="form-control" id="datefrom" name="datefrom" placeholder="Date from." type="text" required>
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="col-sm-2 control-label">Back</label>
+                                <div class="col-sm-10">
+                                  <input class="form-control" id="dateto" name="dateto" placeholder="Date to." type="text" required>
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                <label for="reason" class="col-sm-2 control-label">Reason </label>
+                                <div class="col-sm-10">
+                                  <textarea class="form-control" id="reason" name="reason" placeholder="Reason." required></textarea>
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                  <button type="submit" name="requestleave" value="true" class="btn btn-default">send request</button><br/>
+                                </div>
+
+                                  <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+                              </div>
+                            </form>
+
+                          </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- PAGE CONTENT WRAPPER -->
+            </div>
